@@ -52,7 +52,7 @@ func (s *Slack) Write(o []byte) (n int, err error) {
 
 	params.Attachments = []slack.Attachment{
 		{
-			Text:       fmt.Sprintf("%s\n\u2014", outBuf.String()), // \u200B for space
+			Text:       fmt.Sprintf("%s", outBuf.String()),
 			MarkdownIn: []string{"text"},
 		},
 	}
@@ -86,7 +86,8 @@ Loop:
 				s.channel = ev.Msg.Channel
 				r, _ := regexp.Compile(`(bot hash)\s`)
 				if r.MatchString(ev.Text) {
-					s.Write([]byte(strings.TrimPrefix(ev.Text, s.botUID)))
+					log.Printf("slackbot: joined channel %s\n", ev.Text)
+					s.Write([]byte(ev.Text))
 				}
 			case *slack.InvalidAuthEvent:
 				log.Println("I seem to be disconnected, can't let you do that.")
